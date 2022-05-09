@@ -11,7 +11,7 @@ endif()
 
 set (install_prefix "${CMAKE_CURRENT_BINARY_DIR}/local")
 
-set(THIRDPARTY_LIBSSH2L_PREFIX ${install_prefix} PARENT_SCOPE)
+set(THIRDPARTY_LIBSSH2_PREFIX ${install_prefix} PARENT_SCOPE)
 set(HAS_THIRDPARTY_LIBSSH2 ON PARENT_SCOPE)
 
 include(ExternalProject)
@@ -21,16 +21,19 @@ function(libssh2Main)
     add_library(thirdparty_libssh2 INTERFACE)
     add_library(thirdparty_libssh2_static STATIC IMPORTED GLOBAL)
     if (NOT CMD_MAKE)
-        message(STATUS "[curl] set CMD_MAKE is make.")
+        message(STATUS "[libssh2] set CMD_MAKE is make.")
         set(CMD_MAKE make)
     endif()
 
-    message(STATUS "[curl] add external project: libssh2")
+    message(STATUS "[libssh2] add external project: libssh2")
 
     # 依赖库 https://curl.se/docs/libs.html
     set(configure_command
-        "${CMAKE_COMMAND}" -E env "CC=${CMAKE_C_COMPILER}" "AR=${CMAKE_AR}"
+        "${CMAKE_COMMAND}" -E env "CC=${CMAKE_C_COMPILER}" "AR=${CMAKE_AR}" "LIBS=-lpthread -ldl"
         perl ./configure
+        --with-sysroot=${CMAKE_SYSROOT}
+        --enable-static
+        --with-libssl-prefix=${THIRDPARTY_OPENSSL_PREFIX}
         "--prefix=${install_prefix}"
         "CFLAGS=-fPIC"
         "CPPFLAGS=-fPIC"
