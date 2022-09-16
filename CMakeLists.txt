@@ -49,6 +49,7 @@ function(libssh2Main)
         INSTALL_COMMAND ${CMD_MAKE} install
         UPDATE_COMMAND ""
         )
+    add_dependencies(libssh2 openssl)
     add_dependencies(thirdparty_libssh2_static libssh2)
 
     set_target_properties(thirdparty_libssh2_static PROPERTIES IMPORTED_LOCATION
